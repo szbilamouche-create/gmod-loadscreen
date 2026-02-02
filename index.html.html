@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chargement - Rockford</title>
+    
+    <style>
+        /* ====================================
+           ⚙️ IMPORT POLICE
+           ==================================== */
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* ====================================
+           🎨 BODY & BACKGROUND
+           ==================================== */
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+        
+        /* Container pour les backgrounds qui changent */
+        .background-slider {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+        
+        /* ANTI-FLOU : Images de fond optimisées */
+        .background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+            will-change: opacity;
+        }
+        
+        .background-image.active {
+            opacity: 1;
+        }
+        
+        /* Overlay réduit pour plus de clarté */
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: -1;
+        }
+        
+        /* ====================================
+           📦 CONTENEUR PRINCIPAL
+           ==================================== */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 40px;
+            position: relative;
+        }
+        
+        /* ====================================
+           👥 COMPTEUR DE JOUEURS (INTÉGRÉ DANS SERVER-INFO)
+           ==================================== */
+        .player-counter {
+            background: rgba(20, 20, 20, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+            padding: 10px 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.4);
+            margin-top: 8px;
+        }
+        
+        .player-icon {
+            color: #ffffff;
+            font-size: 16px;
+            opacity: 0.8;
+        }
+        
+        .player-count-text {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .player-count-label {
+            color: #b0b0b0;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .player-count-value {
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+        }
+        
+        .player-count-value .current {
+            color: #4CAF50;
+        }
+        
+        /* ====================================
+           🏢 LOGO - ANTI-FLOU
+           ==================================== */
+        .logo-container {
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+            text-align: center;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+        
+        .logo {
+            width: 220px;
+            height: 220px;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.8))
+                    drop-shadow(0 5px 15px rgba(0, 0, 0, 0.6));
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: high-quality;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+        
+        /* ====================================
+           📝 TITRE
+           ==================================== */
+        .title {
+            color: #ffffff;
+            font-size: 3rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 5px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+            letter-spacing: 1px;
+        }
+        
+        /* Ligne blanche argentée sous le titre */
+        .title-underline {
+            width: 400px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ffffff, transparent);
+            margin: 0 auto 20px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+        
+        /* ====================================
+           ⏳ STATUS
+           ==================================== */
+        .status {
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+        }
+        
+        /* ====================================
+           📊 BARRE DE PROGRESSION
+           ==================================== */
+        .progress-container {
+            width: 500px;
+            margin: 10px auto 20px;
+        }
+        
+        .progress-bar-wrapper {
+            width: 100%;
+            height: 8px;
+            background: rgba(20, 20, 20, 0.8);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5),
+                        inset 0 2px 5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, 
+                #ffffff 0%, 
+                #e0e0e0 50%, 
+                #ffffff 100%);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            position: relative;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5),
+                        0 0 30px rgba(255, 255, 255, 0.3);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% {
+                background-position: -500px 0;
+            }
+            100% {
+                background-position: 500px 0;
+            }
+        }
+        
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.6),
+                transparent);
+            animation: shine 2s infinite;
+        }
+        
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+        
+        .progress-percentage {
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 10px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        /* ====================================
+           📊 INFOS SERVEUR
+           ==================================== */
+        .server-info {
+            color: #ffffff;
+            font-size: 0.95rem;
+            text-align: center;
+            margin: 15px 0;
+            line-height: 1.8;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+        }
+        
+        .server-info div {
+            margin: 3px 0;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Discord en blanc argenté */
+        .discord-text {
+            color: #e5e5e5;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .discord-link {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        
+        /* ====================================
+           👥 SECTION FONDATION - 2 FONDATEURS
+           ==================================== */
+        .foundation-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .foundation-title {
+            color: #ffffff;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Grille pour 2 fondateurs côte à côte */
+        .founders-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Carte de fondateur - Thème noir et blanc */
+        .founder-card {
+            background: rgba(20, 20, 20, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 25px 30px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .founder-card:hover {
+            border-color: #ffffff;
+            box-shadow: 0 8px 35px rgba(255, 255, 255, 0.3);
+            transform: translateY(-5px);
+        }
+        
+        .founder-name {
+            color: #ffffff;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+        }
+        
+        .founder-rank {
+            color: #b0b0b0;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        /* ====================================
+           📱 RESPONSIVE
+           ==================================== */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .title-underline {
+                width: 250px;
+            }
+            
+            .logo {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .founders-grid {
+                grid-template-columns: 1fr;
+                max-width: 300px;
+            }
+            
+            .progress-container {
+                width: 90%;
+            }
+            
+            .player-counter {
+                top: 15px;
+                right: 15px;
+                padding: 12px 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background slider -->
+    <div class="background-slider" id="backgroundSlider"></div>
+    <div class="background-overlay"></div>
+    
+    <!-- Conteneur principal -->
+    <div class="container">
+        <!-- Logo SANS cercle -->
+        <div class="logo-container">
+            <img src="" alt="Logo" class="logo" id="logo">
+        </div>
+        
+        <!-- Titre -->
+        <h1 class="title" id="serverName">Bienvenue sur Rockford</h1>
+        <div class="title-underline"></div>
+        
+        <!-- Status -->
+        <div class="status" id="statusText">Chargement en cours...</div>
+        
+        <!-- Barre de progression -->
+        <div class="progress-container">
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="progress-percentage" id="progressPercentage">0%</div>
+        </div>
+        
+        <!-- Infos serveur -->
+        <div class="server-info">
+            <div><span class="info-label">MAP:</span> <span id="mapName">rp_rockford_v2</span></div>
+            <div><span class="info-label">GAMEMODE:</span> <span id="gameMode">DARKRP</span></div>
+            <div class="discord-text">
+                Rejoignez notre Discord: <a href="#" class="discord-link" id="discordLink" target="_blank"></a>
+            </div>
+            
+            <!-- Compteur de joueurs intégré -->
+            <div class="player-counter">
+                <div class="player-icon">👥</div>
+                <div class="player-count-text">
+                    <div class="player-count-label">Joueurs:</div>
+                    <div class="player-count-value">
+                        <span class="current" id="currentPlayers">0</span>/<span id="maxPlayers">128</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section Fondation avec 2 fondateurs -->
+        <div class="foundation-section">
+            <div class="foundation-title" id="foundationTitle">FONDATION</div>
+            
+            <div class="founders-grid" id="foundersGrid">
+                <!-- Les fondateurs seront ajoutés ici par JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        /* ====================================
+           ⚙️ CONFIGURATION - MODIFIE ICI
+           ==================================== */
+        const CONFIG = {
+            // TITRE PRINCIPAL
+            serverName: 'Bienvenue sur Rockford',
+            
+            // URL DU LOGO
+            logoUrl: 'https://i.imgur.com/1t3D69w.png',
+            
+            // URLS DES IMAGES DE FOND
+            backgroundUrls: [
+                'https://i.imgur.com/sE0uEFd.jpeg',
+                'https://i.imgur.com/Zs0Gei9.jpeg',
+                'https://i.imgur.com/1jO2TQ5.jpeg',
+                'https://i.imgur.com/hnsAtNk.jpeg',
+                'https://i.imgur.com/3RFiH34.jpeg'
+            ],
+            
+            // Temps en secondes entre chaque changement
+            backgroundChangeInterval: 5,
+            
+            // LIEN DISCORD 
+            discordUrl: 'https://discord.gg/CEPX2THuQg',
+            discordText: 'discord.gg/CEPX2THuQg',
+            
+            // TITRE DE LA SECTION
+            foundationTitle: 'FONDATION',
+            
+            // LISTE DES FONDATEURS
+            founders: [
+                { name: 'Azorixx.', rank: 'FONDATEUR' },
+                { name: 'Matthieu', rank: 'FONDATEUR' }
+            ]
+        };
+        
+        /* ====================================
+           🎨 SYSTÈME DE SLIDER DE BACKGROUNDS
+           ==================================== */
+        let currentBackgroundIndex = 0;
+        let backgroundElements = [];
+        
+        function initBackgroundSlider() {
+            const slider = document.getElementById('backgroundSlider');
+            
+            CONFIG.backgroundUrls.forEach((url, index) => {
+                const bgDiv = document.createElement('div');
+                bgDiv.className = 'background-image';
+                bgDiv.style.backgroundImage = `url('${url}')`;
+                
+                if (index === 0) {
+                    bgDiv.classList.add('active');
+                }
+                
+                slider.appendChild(bgDiv);
+                backgroundElements.push(bgDiv);
+            });
+            
+            if (CONFIG.backgroundUrls.length > 1) {
+                setInterval(changeBackground, CONFIG.backgroundChangeInterval * 1000);
+            }
+        }
+        
+        function changeBackground() {
+            backgroundElements[currentBackgroundIndex].classList.remove('active');
+            currentBackgroundIndex = (currentBackgroundIndex + 1) % backgroundElements.length;
+            backgroundElements[currentBackgroundIndex].classList.add('active');
+        }
+        
+        /* ====================================
+           👥 GÉNÉRATION DES FONDATEURS
+           ==================================== */
+        function initFounders() {
+            const foundersGrid = document.getElementById('foundersGrid');
+            
+            CONFIG.founders.forEach(founder => {
+                const founderCard = document.createElement('div');
+                founderCard.className = 'founder-card';
+                founderCard.innerHTML = `
+                    <div class="founder-name">${founder.name}</div>
+                    <div class="founder-rank">${founder.rank}</div>
+                `;
+                foundersGrid.appendChild(founderCard);
+            });
+        }
+        
+        /* ====================================
+           📊 GESTION DE LA BARRE DE PROGRESSION
+           ==================================== */
+        function updateProgressBar(percentage) {
+            const progressBar = document.getElementById('progressBar');
+            const progressPercentage = document.getElementById('progressPercentage');
+            
+            progressBar.style.width = percentage + '%';
+            progressPercentage.textContent = Math.round(percentage) + '%';
+        }
+        
+        /* ====================================
+           👥 MISE À JOUR DU COMPTEUR DE JOUEURS
+           ==================================== */
+        function updatePlayerCount(current, max) {
+            document.getElementById('currentPlayers').textContent = current;
+            document.getElementById('maxPlayers').textContent = max;
+        }
+        
+        /* ====================================
+           🎮 FONCTIONS GARRY'S MOD
+           ==================================== */
+        let totalFiles = 0;
+        
+        function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
+            document.getElementById('mapName').textContent = mapname;
+            document.getElementById('gameMode').textContent = gamemode.toUpperCase();
+            updatePlayerCount(0, maxplayers);
+        }
+        
+        function SetStatusChanged(status) {
+            document.getElementById('statusText').textContent = status.toUpperCase();
+        }
+        
+        function SetFilesTotal(total) {
+            totalFiles = total;
+        }
+        
+        function SetFilesNeeded(needed) {
+            if (totalFiles > 0 && needed > 0) {
+                const downloaded = totalFiles - needed;
+                const percentage = (downloaded / totalFiles) * 100;
+                
+                document.getElementById('statusText').textContent = 
+                    `TÉLÉCHARGEMENT: ${downloaded}/${totalFiles} FICHIERS`;
+                
+                updateProgressBar(percentage);
+            } else if (needed === 0 && totalFiles > 0) {
+                document.getElementById('statusText').textContent = 'CHARGEMENT TERMINÉ...';
+                updateProgressBar(100);
+            }
+        }
+        
+        function DownloadingFile(fileName) {
+            document.getElementById('statusText').textContent = 
+                `TÉLÉCHARGEMENT: ${fileName}`;
+        }
+        
+        /* ====================================
+           🔧 FONCTIONS D'INITIALISATION
+           ==================================== */
+        function applyConfig() {
+            document.getElementById('serverName').textContent = CONFIG.serverName;
+            document.getElementById('logo').src = CONFIG.logoUrl;
+            initBackgroundSlider();
+            
+            const discordLink = document.getElementById('discordLink');
+            discordLink.href = CONFIG.discordUrl;
+            discordLink.textContent = CONFIG.discordText;
+            
+            document.getElementById('foundationTitle').textContent = CONFIG.foundationTitle;
+            initFounders();
+        }
+        
+        /* ====================================
+           🚀 INITIALISATION
+           ==================================== */
+        window.addEventListener('DOMContentLoaded', () => {
+            applyConfig();
+            
+            // Simulation pour test local
+            if (window.location.protocol === 'file:' || 
+                window.location.hostname === 'localhost' || 
+                window.location.hostname === '127.0.0.1') {
+                
+                console.log('🧪 Mode test local - Simulation activée');
+                
+                setTimeout(() => {
+                    GameDetails('Rockford', '', 'rp_rockford_v2', '128', '', 'DarkRP');
+                }, 500);
+                
+                // Simulation du compteur de joueurs qui change
+                let currentPlayerCount = 0;
+                setInterval(() => {
+                    currentPlayerCount = Math.floor(Math.random() * 128);
+                    updatePlayerCount(currentPlayerCount, 128);
+                }, 3000);
+                
+                // Simulation du téléchargement
+                let filesDownloaded = 0;
+                const totalSimulatedFiles = 50;
+                SetFilesTotal(totalSimulatedFiles);
+                
+                const simulationInterval = setInterval(() => {
+                    filesDownloaded += Math.floor(Math.random() * 5) + 1;
+                    
+                    if (filesDownloaded >= totalSimulatedFiles) {
+                        filesDownloaded = totalSimulatedFiles;
+                        SetFilesNeeded(0);
+                        clearInterval(simulationInterval);
+                    } else {
+                        SetFilesNeeded(totalSimulatedFiles - filesDownloaded);
+                    }
+                }, 300);
+            }
+        });
+    </script>
+</body>
+</html>
