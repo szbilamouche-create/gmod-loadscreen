@@ -37,7 +37,7 @@
             z-index: -2;
         }
         
-        /* ANTI-FLOU : Images de fond optimisées */
+        /* Images de fond optimisées */
         .background-image {
             position: absolute;
             top: 0;
@@ -48,20 +48,14 @@
             background-position: center;
             background-repeat: no-repeat;
             opacity: 0;
-            transition: opacity 2s ease-in-out;
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            transform: translateZ(0);
-            will-change: opacity;
+            transition: opacity 1.5s ease-in-out;
         }
         
         .background-image.active {
             opacity: 1;
         }
         
-        /* Overlay réduit pour plus de clarté */
+        /* Overlay */
         .background-overlay {
             position: fixed;
             top: 0;
@@ -86,7 +80,7 @@
         }
         
         /* ====================================
-           👥 COMPTEUR DE JOUEURS (INTÉGRÉ DANS SERVER-INFO)
+           👥 COMPTEUR DE JOUEURS
            ==================================== */
         .player-counter {
             background: rgba(20, 20, 20, 0.85);
@@ -124,7 +118,6 @@
             color: #ffffff;
             font-size: 1rem;
             font-weight: 600;
-            text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
         }
         
         .player-count-value .current {
@@ -132,7 +125,7 @@
         }
         
         /* ====================================
-           🏢 LOGO - ANTI-FLOU
+           🏢 LOGO
            ==================================== */
         .logo-container {
             margin-bottom: 20px;
@@ -145,7 +138,7 @@
                 transform: translateY(0px);
             }
             50% {
-                transform: translateY(-20px);
+                transform: translateY(-15px);
             }
         }
         
@@ -153,12 +146,7 @@
             width: 220px;
             height: 220px;
             object-fit: contain;
-            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.8))
-                    drop-shadow(0 5px 15px rgba(0, 0, 0, 0.6));
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: high-quality;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.8));
         }
         
         /* ====================================
@@ -174,7 +162,6 @@
             letter-spacing: 1px;
         }
         
-        /* Ligne blanche argentée sous le titre */
         .title-underline {
             width: 400px;
             height: 2px;
@@ -212,56 +199,16 @@
             border-radius: 10px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5),
-                        inset 0 2px 5px rgba(0, 0, 0, 0.5);
-            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
         }
         
         .progress-bar {
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, 
-                #ffffff 0%, 
-                #e0e0e0 50%, 
-                #ffffff 100%);
+            background: linear-gradient(90deg, #ffffff 0%, #e0e0e0 50%, #ffffff 100%);
             border-radius: 10px;
             transition: width 0.3s ease;
-            position: relative;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5),
-                        0 0 30px rgba(255, 255, 255, 0.3);
-            animation: shimmer 2s infinite;
-        }
-        
-        @keyframes shimmer {
-            0% {
-                background-position: -500px 0;
-            }
-            100% {
-                background-position: 500px 0;
-            }
-        }
-        
-        .progress-bar::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg,
-                transparent,
-                rgba(255, 255, 255, 0.6),
-                transparent);
-            animation: shine 2s infinite;
-        }
-        
-        @keyframes shine {
-            0% {
-                transform: translateX(-100%);
-            }
-            100% {
-                transform: translateX(100%);
-            }
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
         }
         
         .progress-percentage {
@@ -295,7 +242,6 @@
             letter-spacing: 1px;
         }
         
-        /* Discord en blanc argenté */
         .discord-text {
             color: #e5e5e5;
             font-weight: 600;
@@ -310,7 +256,7 @@
         }
         
         /* ====================================
-           👥 SECTION FONDATION - 2 FONDATEURS
+           👥 SECTION FONDATION
            ==================================== */
         .foundation-section {
             margin-top: 20px;
@@ -327,7 +273,6 @@
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
         }
         
-        /* Grille pour 2 fondateurs côte à côte */
         .founders-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -336,7 +281,6 @@
             margin: 0 auto;
         }
         
-        /* Carte de fondateur - Thème noir et blanc */
         .founder-card {
             background: rgba(20, 20, 20, 0.9);
             border: 2px solid rgba(255, 255, 255, 0.3);
@@ -393,12 +337,6 @@
             .progress-container {
                 width: 90%;
             }
-            
-            .player-counter {
-                top: 15px;
-                right: 15px;
-                padding: 12px 18px;
-            }
         }
     </style>
 </head>
@@ -409,7 +347,7 @@
     
     <!-- Conteneur principal -->
     <div class="container">
-        <!-- Logo SANS cercle -->
+        <!-- Logo -->
         <div class="logo-container">
             <img src="" alt="Logo" class="logo" id="logo">
         </div>
@@ -437,7 +375,7 @@
                 Rejoignez notre Discord: <a href="#" class="discord-link" id="discordLink" target="_blank"></a>
             </div>
             
-            <!-- Compteur de joueurs intégré -->
+            <!-- Compteur de joueurs -->
             <div class="player-counter">
                 <div class="player-icon">👥</div>
                 <div class="player-count-text">
@@ -449,28 +387,20 @@
             </div>
         </div>
         
-        <!-- Section Fondation avec 2 fondateurs -->
+        <!-- Section Fondation -->
         <div class="foundation-section">
             <div class="foundation-title" id="foundationTitle">FONDATION</div>
-            
-            <div class="founders-grid" id="foundersGrid">
-                <!-- Les fondateurs seront ajoutés ici par JavaScript -->
-            </div>
+            <div class="founders-grid" id="foundersGrid"></div>
         </div>
     </div>
     
     <script>
         /* ====================================
-           ⚙️ CONFIGURATION - MODIFIE ICI
+           ⚙️ CONFIGURATION
            ==================================== */
         const CONFIG = {
-            // TITRE PRINCIPAL
             serverName: 'Bienvenue sur Rockford',
-            
-            // URL DU LOGO
             logoUrl: 'https://i.imgur.com/1t3D69w.png',
-            
-            // URLS DES IMAGES DE FOND
             backgroundUrls: [
                 'https://i.imgur.com/sE0uEFd.jpeg',
                 'https://i.imgur.com/Zs0Gei9.jpeg',
@@ -478,18 +408,10 @@
                 'https://i.imgur.com/hnsAtNk.jpeg',
                 'https://i.imgur.com/3RFiH34.jpeg'
             ],
-            
-            // Temps en secondes entre chaque changement
             backgroundChangeInterval: 5,
-            
-            // LIEN DISCORD 
             discordUrl: 'https://discord.gg/CEPX2THuQg',
             discordText: 'discord.gg/CEPX2THuQg',
-            
-            // TITRE DE LA SECTION
             foundationTitle: 'FONDATION',
-            
-            // LISTE DES FONDATEURS
             founders: [
                 { name: 'Azorixx.', rank: 'FONDATEUR' },
                 { name: 'Matthieu', rank: 'FONDATEUR' }
@@ -497,7 +419,7 @@
         };
         
         /* ====================================
-           🎨 SYSTÈME DE SLIDER DE BACKGROUNDS
+           🎨 SLIDER DE BACKGROUNDS
            ==================================== */
         let currentBackgroundIndex = 0;
         let backgroundElements = [];
@@ -530,7 +452,7 @@
         }
         
         /* ====================================
-           👥 GÉNÉRATION DES FONDATEURS
+           👥 FONDATEURS
            ==================================== */
         function initFounders() {
             const foundersGrid = document.getElementById('foundersGrid');
@@ -547,7 +469,7 @@
         }
         
         /* ====================================
-           📊 GESTION DE LA BARRE DE PROGRESSION
+           📊 BARRE DE PROGRESSION
            ==================================== */
         function updateProgressBar(percentage) {
             const progressBar = document.getElementById('progressBar');
@@ -558,7 +480,7 @@
         }
         
         /* ====================================
-           👥 MISE À JOUR DU COMPTEUR DE JOUEURS
+           👥 COMPTEUR DE JOUEURS
            ==================================== */
         function updatePlayerCount(current, max) {
             document.getElementById('currentPlayers').textContent = current;
@@ -566,7 +488,7 @@
         }
         
         /* ====================================
-           🎮 FONCTIONS GARRY'S MOD
+           🎮 FONCTIONS GMOD
            ==================================== */
         let totalFiles = 0;
         
@@ -605,7 +527,7 @@
         }
         
         /* ====================================
-           🔧 FONCTIONS D'INITIALISATION
+           🚀 INITIALISATION
            ==================================== */
         function applyConfig() {
             document.getElementById('serverName').textContent = CONFIG.serverName;
@@ -620,31 +542,24 @@
             initFounders();
         }
         
-        /* ====================================
-           🚀 INITIALISATION
-           ==================================== */
         window.addEventListener('DOMContentLoaded', () => {
             applyConfig();
             
-            // Simulation pour test local
+            // Test local
             if (window.location.protocol === 'file:' || 
                 window.location.hostname === 'localhost' || 
                 window.location.hostname === '127.0.0.1') {
-                
-                console.log('🧪 Mode test local - Simulation activée');
                 
                 setTimeout(() => {
                     GameDetails('Rockford', '', 'rp_rockford_v2', '128', '', 'DarkRP');
                 }, 500);
                 
-                // Simulation du compteur de joueurs qui change
                 let currentPlayerCount = 0;
                 setInterval(() => {
                     currentPlayerCount = Math.floor(Math.random() * 128);
                     updatePlayerCount(currentPlayerCount, 128);
                 }, 3000);
                 
-                // Simulation du téléchargement
                 let filesDownloaded = 0;
                 const totalSimulatedFiles = 50;
                 SetFilesTotal(totalSimulatedFiles);
